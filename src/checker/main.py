@@ -24,7 +24,7 @@ def report_free(domain: str, price: Union[int, float], file_path="free.txt"):
 def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0.2, file_path="free.txt"):
     """
     Main routine for checking availability
-    Using a subprocess to access the 'whois' cli command
+    Using a subprocess to access the 'nslookup' cli command
     :param name: domain name to check for
     :param only_buyable: ignore domains that are not buyable yet
     :param price_below: max price for the domain (on checkdomain.net)
@@ -57,9 +57,16 @@ def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0
         domain_name = f"{name}.{domain}"
 
         logger.debug(f"Trying {domain_name}")
-        ret: str = os.popen(f"whois {domain_name}").read()
+        ret: str = os.popen(f"nslookup {domain_name}").read()
 
-        if "available" in ret.lower() and "not available" not in ret.lower():
+        # to blacklist clauses (whoami):
+        # abogado: "is 'available',"
+        # be: "still available", "made available to", "not available"
+        # info: "available due", "available through"
+        # io: "available due"
+        # io: "available through"
+        # net: "available by"
+        if f"** server can't find {domain_name}: NXDOMAIN" in ret:
             logger.info(f"FOUND FREE: {domain_name} for price: {price}")
             report_free(domain_name, price, file_path=file_path)
 
