@@ -57,7 +57,7 @@ def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0
         domain_name = f"{name}.{domain}"
 
         logger.debug(f"Trying {domain_name}")
-        ret: str = os.popen(f"nslookup {domain_name}").read()
+        ret: str = os.popen(f"dig {domain_name} SOA").read()
 
         # to blacklist clauses (whoami):
         # abogado: "is 'available',"
@@ -66,7 +66,7 @@ def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0
         # io: "available due"
         # io: "available through"
         # net: "available by"
-        if f"** server can't find {domain_name}: NXDOMAIN" in ret:
+        if f"AUTHORITY SECTION" in ret:
             logger.info(f"FOUND FREE: {domain_name} for price: {price}")
             report_free(domain_name, price, file_path=file_path)
 
