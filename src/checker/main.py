@@ -31,7 +31,7 @@ def main(name, data: List[Tuple[str, float]], price_below=20000, max_len=18, req
     :param file_path: Name of file to report to
     """
 
-    to_request = data
+    to_request = data.copy()
 
     # remove entries that don't match criteria
     for entry in data:
