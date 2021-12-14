@@ -2,6 +2,7 @@
 import argparse
 
 from .main import main as _main
+from .fetch_and_prepare import fetch_file
 
 
 def main():
@@ -21,10 +22,11 @@ def main():
     args = parser.parse_args()
 
     _main(args.name,
+    data = fetch_file()
           price_below=args.price,
           request_delay=args.rate,
           file_path=args.file)
 
 
-if __name__ == '__main__':
-    _main("nico")
+# if __name__ == '__main__':
+#     _main("nico")
