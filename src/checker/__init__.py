@@ -21,8 +21,9 @@ def main():
 
     args = parser.parse_args()
 
-    _main(args.name,
     data = fetch_file()
+
+    _main(args.name, data,
           price_below=args.price,
           request_delay=args.rate,
           file_path=args.file)

@@ -1,10 +1,8 @@
-import math
 import time
 import os
-from typing import Union
+from typing import Union, List, Tuple
 
 from .log_setup import logger
-from .huge_dict import huge_dict
 
 
 def report_free(domain: str, price: Union[int, float], file_path="free.txt"):
@@ -21,47 +19,44 @@ def report_free(domain: str, price: Union[int, float], file_path="free.txt"):
 
 
 # travelersinsurance is the longest upcoming toplevel domain with 18 chars, lol
-def main(name, price_below=20000, max_len=18, request_delay=0.2, file_path="free.txt"):
+def main(name, data: List[Tuple[str, float]], price_below=20000, max_len=18, request_delay=0.2, file_path="free.txt"):
     """
     Main routine for checking availability
     Using a subprocess to access the 'nslookup' cli command
     :param name: domain name to check for
-    :param price_below: max price for the domain (on checkdomain.net)
+    :param data: list with tuples of domains to check for (domain-name, price per month)
+    :param price_below: max price for the domain (on do.de)
     :param max_len: max length the domain should have
     :param request_delay: delay between whois-requests
     :param file_path: Name of file to report to
     """
 
-    to_request = huge_dict
+    to_request = data
 
     # remove entries that don't match criteria
-    for entry in huge_dict:
+    for entry in data:
+        domain = entry[0]
+        price = entry[1]
 
-        if price_below and not entry.get("price", math.inf) < price_below:
+        if price_below and not price < price_below:
             to_request.remove(entry)
             continue
 
-        if max_len < len(entry["tld"]):
+        if max_len < len(domain):
             to_request.remove(entry)
             continue
 
     # cycle trough domains that are left and check if available
     for entry in to_request:
-        domain = entry["tld"]
-        price = entry.get('price', None)
+        domain = entry[0]
+        price = entry[1]
 
         domain_name = f"{name}.{domain}"
 
         logger.debug(f"Trying {domain_name}")
         ret: str = os.popen(f"dig {domain_name} SOA").read()
 
-        # to blacklist clauses (whoami):
-        # abogado: "is 'available',"
-        # be: "still available", "made available to", "not available"
-        # info: "available due", "available through"
-        # io: "available due"
-        # io: "available through"
-        # net: "available by"
+        # check if domain is free, authority section is only given when domain is not registered
         if f"AUTHORITY SECTION" in ret:
             logger.info(f"FOUND FREE: {domain_name} for price: {price}")
             report_free(domain_name, price, file_path=file_path)
