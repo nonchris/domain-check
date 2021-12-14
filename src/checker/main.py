@@ -21,12 +21,11 @@ def report_free(domain: str, price: Union[int, float], file_path="free.txt"):
 
 
 # travelersinsurance is the longest upcoming toplevel domain with 18 chars, lol
-def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0.2, file_path="free.txt"):
+def main(name, price_below=20000, max_len=18, request_delay=0.2, file_path="free.txt"):
     """
     Main routine for checking availability
     Using a subprocess to access the 'nslookup' cli command
     :param name: domain name to check for
-    :param only_buyable: ignore domains that are not buyable yet
     :param price_below: max price for the domain (on checkdomain.net)
     :param max_len: max length the domain should have
     :param request_delay: delay between whois-requests
@@ -37,9 +36,6 @@ def main(name, only_buyable=True, price_below=20000, max_len=18, request_delay=0
 
     # remove entries that don't match criteria
     for entry in huge_dict:
-        if only_buyable and not entry.get("price", False):
-            to_request.remove(entry)
-            continue
 
         if price_below and not entry.get("price", math.inf) < price_below:
             to_request.remove(entry)

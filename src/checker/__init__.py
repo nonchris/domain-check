@@ -17,16 +17,13 @@ def main():
                         type=float, default=0.2, required=False)
     parser.add_argument("-f", "--file", help="File the available results are written to, default: ./'free.txt'",
                         type=str, default="./free.txt", required=False)
-    parser.add_argument("--preorder", help="Allow domains that are only for preorder yet, default: False",
-                        required=False, action='store_true')
 
     args = parser.parse_args()
 
     _main(args.name,
           price_below=args.price,
           request_delay=args.rate,
-          file_path=args.file,
-          only_buyable=args.preorder)
+          file_path=args.file)
 
 
 if __name__ == '__main__':
