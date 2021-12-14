@@ -43,7 +43,7 @@ setup(
 
     python_requires='>=3.8, <4',
 
-    install_requires=[],
+    install_requires=["requests"],
 
     entry_points={
         'console_scripts': [
