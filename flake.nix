@@ -29,7 +29,7 @@
               doCheck = false;
               src = self;
 
-              postInstall = ''
+              postInstall = pkgs.lib.optional stdenv.isLinux ''
                 wrapProgram $out/bin/domain-check --prefix PATH : ${
                   pkgs.lib.makeBinPath [ pkgs.dnsutils ]
                 }
